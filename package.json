@@ -1,0 +1,18 @@
+{
+  "name": "al-suffa-mis",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,green\" \"yarn workspace backend dev\" \"yarn workspace frontend dev\"",
+    "build": "yarn workspace frontend build",
+    "seed": "yarn workspace backend seed",
+    "test:db": "yarn workspace backend test:db"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
