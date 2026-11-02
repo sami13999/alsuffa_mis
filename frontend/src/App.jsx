@@ -1,13 +1,36 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+
+// Auth
 import Login from './modules/auth/Login';
-import AdminDashboard from './modules/admin/AdminDashboard';
-import AccountsDashboard from './modules/accounts/AccountsDashboard';
-import TeacherDashboard from './modules/teacher/TeacherDashboard';
-import StudentPortal from './modules/student/StudentPortal';
-import SystemHealth from './components/SystemHealth';
-import DashboardLayout from './layouts/DashboardLayout';
+
+// Super Admin Pages
+import AdminOverviewPage from './modules/admin/AdminOverviewPage';
+import AcademicManagementPage from './modules/admin/AcademicManagementPage';
+import StudentAdmissionsPage from './modules/admin/StudentAdmissionsPage';
+import StaffManagementPage from './modules/admin/StaffManagementPage';
+import TimetableBuilderPage from './modules/admin/TimetableBuilderPage';
+import ExamManagementPage from './modules/admin/ExamManagementPage';
+import SystemDiagnosticsPage from './modules/admin/SystemDiagnosticsPage';
+
+// Accounts Pages
+import AccountsOverviewPage from './modules/accounts/AccountsOverviewPage';
+import FeeConfigurationPage from './modules/accounts/FeeConfigurationPage';
+import BulkVouchersPage from './modules/accounts/BulkVouchersPage';
+import FeeCollectionPOSPage from './modules/accounts/FeeCollectionPOSPage';
+import PayrollDisbursementPage from './modules/accounts/PayrollDisbursementPage';
+
+// Teacher Pages
+import TeacherOverviewPage from './modules/teacher/TeacherOverviewPage';
+import TeacherSchedulePage from './modules/teacher/TeacherSchedulePage';
+import ExamMarksEntryPage from './modules/teacher/ExamMarksEntryPage';
+
+// Student Pages
+import StudentOverviewPage from './modules/student/StudentOverviewPage';
+import StudentTimetablePage from './modules/student/StudentTimetablePage';
+import StudentFeeVouchersPage from './modules/student/StudentFeeVouchersPage';
+import StudentReportCardPage from './modules/student/StudentReportCardPage';
 
 // Protected Route Guard
 function ProtectedRoute({ children, allowedRoles }) {
@@ -29,31 +52,13 @@ function ProtectedRoute({ children, allowedRoles }) {
   }
 
   if (allowedRoles && !allowedRoles.includes(role)) {
-    return (
-      <DashboardLayout>
-        <div className="max-w-md mx-auto mt-16 p-6 bg-white rounded-2xl border border-rose-200 text-center shadow-sm">
-          <div className="h-12 w-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-3">
-            &times;
-          </div>
-          <h2 className="text-lg font-bold text-slate-900">Access Restricted</h2>
-          <p className="text-xs text-slate-500 mt-1 mb-4">
-            Your user account does not possess the permissions required to view this module.
-          </p>
-          <a
-            href="/"
-            className="inline-flex px-4 py-2 bg-slate-900 text-white rounded-lg text-xs font-semibold"
-          >
-            Return to Authorized Dashboard
-          </a>
-        </div>
-      </DashboardLayout>
-    );
+    return <Navigate to="/" replace />;
   }
 
   return children;
 }
 
-// Root Dispatcher based on active role
+// Root Role Dispatcher
 function RootRedirect() {
   const { isAuthenticated, loading, role } = useAuth();
 
@@ -78,63 +83,184 @@ export default function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          {/* Public Auth */}
+          {/* Public Authentication */}
           <Route path="/login" element={<Login />} />
 
           {/* Root Role Dispatcher */}
           <Route path="/" element={<RootRedirect />} />
 
-          {/* Super Admin Dashboard */}
+          {/* ======================================================== */}
+          {/* 1. SUPER ADMIN DEDICATED ROUTES                          */}
+          {/* ======================================================== */}
           <Route
-            path="/admin/*"
+            path="/admin"
             element={
               <ProtectedRoute allowedRoles={['admin']}>
-                <AdminDashboard />
+                <AdminOverviewPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/academics"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AcademicManagementPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/students"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <StudentAdmissionsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/staff"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <StaffManagementPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/timetables"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <TimetableBuilderPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/examinations"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <ExamManagementPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/diagnostics"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <SystemDiagnosticsPage />
               </ProtectedRoute>
             }
           />
 
-          {/* Accounts & Bursar Dashboard */}
+          {/* ======================================================== */}
+          {/* 2. ACCOUNTS / BURSAR DEDICATED ROUTES                    */}
+          {/* ======================================================== */}
           <Route
-            path="/accounts/*"
+            path="/accounts"
             element={
               <ProtectedRoute allowedRoles={['admin', 'accountant']}>
-                <AccountsDashboard />
+                <AccountsOverviewPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/accounts/fees"
+            element={
+              <ProtectedRoute allowedRoles={['admin', 'accountant']}>
+                <FeeConfigurationPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/accounts/vouchers"
+            element={
+              <ProtectedRoute allowedRoles={['admin', 'accountant']}>
+                <BulkVouchersPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/accounts/pos"
+            element={
+              <ProtectedRoute allowedRoles={['admin', 'accountant']}>
+                <FeeCollectionPOSPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/accounts/payroll"
+            element={
+              <ProtectedRoute allowedRoles={['admin', 'accountant']}>
+                <PayrollDisbursementPage />
               </ProtectedRoute>
             }
           />
 
-          {/* Teacher Faculty Dashboard */}
+          {/* ======================================================== */}
+          {/* 3. TEACHER FACULTY DEDICATED ROUTES                      */}
+          {/* ======================================================== */}
           <Route
-            path="/teacher/*"
+            path="/teacher"
             element={
               <ProtectedRoute allowedRoles={['admin', 'teacher']}>
-                <TeacherDashboard />
+                <TeacherOverviewPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/teacher/schedule"
+            element={
+              <ProtectedRoute allowedRoles={['admin', 'teacher']}>
+                <TeacherSchedulePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/teacher/marks"
+            element={
+              <ProtectedRoute allowedRoles={['admin', 'teacher']}>
+                <ExamMarksEntryPage />
               </ProtectedRoute>
             }
           />
 
-          {/* Student Portal */}
+          {/* ======================================================== */}
+          {/* 4. STUDENT PORTAL DEDICATED ROUTES                       */}
+          {/* ======================================================== */}
           <Route
-            path="/student/*"
+            path="/student"
             element={
               <ProtectedRoute allowedRoles={['admin', 'student']}>
-                <StudentPortal />
+                <StudentOverviewPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/student/timetable"
+            element={
+              <ProtectedRoute allowedRoles={['admin', 'student']}>
+                <StudentTimetablePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/student/fees"
+            element={
+              <ProtectedRoute allowedRoles={['admin', 'student']}>
+                <StudentFeeVouchersPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/student/report-card"
+            element={
+              <ProtectedRoute allowedRoles={['admin', 'student']}>
+                <StudentReportCardPage />
               </ProtectedRoute>
             }
           />
 
-          {/* Diagnostics View */}
-          <Route
-            path="/health"
-            element={
-              <DashboardLayout>
-                <SystemHealth />
-              </DashboardLayout>
-            }
-          />
+          {/* Legacy alias */}
+          <Route path="/health" element={<Navigate to="/admin/diagnostics" replace />} />
 
-          {/* Catch-all */}
+          {/* Fallback */}
           <Route path="*" element={<RootRedirect />} />
         </Routes>
       </Router>

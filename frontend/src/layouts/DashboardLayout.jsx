@@ -15,7 +15,8 @@ import {
   Menu,
   X,
   Receipt,
-  UserCheck
+  UserCheck,
+  FileCheck
 } from 'lucide-react';
 import Badge from '../components/Badge';
 
@@ -24,41 +25,39 @@ export default function DashboardLayout({ children }) {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Navigation Items per Role
+  // Separate Navigation Items per Role
   const getNavItems = () => {
     switch (role) {
       case 'admin':
         return [
-          { name: 'Admin Overview', path: '/admin', icon: LayoutDashboard },
-          { name: 'Academic Setup', path: '/admin/academics', icon: GraduationCap },
+          { name: 'Executive Overview', path: '/admin', icon: LayoutDashboard, exact: true },
+          { name: 'Academic Hierarchy', path: '/admin/academics', icon: GraduationCap },
           { name: 'Student Admissions', path: '/admin/students', icon: Users },
           { name: 'Staff Management', path: '/admin/staff', icon: UserCheck },
           { name: 'Timetable Builder', path: '/admin/timetables', icon: CalendarCheck },
-          { name: 'System Diagnostics', path: '/health', icon: Activity }
+          { name: 'Exam Terms & Papers', path: '/admin/examinations', icon: Award },
+          { name: 'System Diagnostics', path: '/admin/diagnostics', icon: Activity }
         ];
       case 'accountant':
         return [
-          { name: 'Accounts Overview', path: '/accounts', icon: LayoutDashboard },
+          { name: 'Financial Overview', path: '/accounts', icon: LayoutDashboard, exact: true },
           { name: 'Fee Configuration', path: '/accounts/fees', icon: CreditCard },
           { name: 'Bulk Vouchers', path: '/accounts/vouchers', icon: FileSpreadsheet },
           { name: 'Fee Collection POS', path: '/accounts/pos', icon: Receipt },
-          { name: 'Staff Payroll', path: '/accounts/payroll', icon: Users },
-          { name: 'System Diagnostics', path: '/health', icon: Activity }
+          { name: 'Staff Payroll', path: '/accounts/payroll', icon: Users }
         ];
       case 'teacher':
         return [
-          { name: 'Teacher Overview', path: '/teacher', icon: LayoutDashboard },
-          { name: 'My Schedule', path: '/teacher/schedule', icon: CalendarCheck },
-          { name: 'Marks Entry', path: '/teacher/marks', icon: Award },
-          { name: 'System Diagnostics', path: '/health', icon: Activity }
+          { name: 'Teacher Overview', path: '/teacher', icon: LayoutDashboard, exact: true },
+          { name: 'My Lecture Schedule', path: '/teacher/schedule', icon: CalendarCheck },
+          { name: 'Exam Marks Entry', path: '/teacher/marks', icon: Award }
         ];
       case 'student':
         return [
-          { name: 'Student Portal', path: '/student', icon: LayoutDashboard },
-          { name: 'My Timetable', path: '/student/timetable', icon: CalendarCheck },
-          { name: 'Fee Vouchers', path: '/student/fees', icon: Receipt },
-          { name: 'Report Card', path: '/student/report-card', icon: Award },
-          { name: 'System Diagnostics', path: '/health', icon: Activity }
+          { name: 'Student Overview', path: '/student', icon: LayoutDashboard, exact: true },
+          { name: 'My Class Timetable', path: '/student/timetable', icon: CalendarCheck },
+          { name: 'Fee Vouchers & Bills', path: '/student/fees', icon: Receipt },
+          { name: 'Report Card & Grades', path: '/student/report-card', icon: Award }
         ];
       default:
         return [{ name: 'Dashboard', path: '/', icon: LayoutDashboard }];
@@ -136,7 +135,9 @@ export default function DashboardLayout({ children }) {
           <nav className="p-4 space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path + '/'));
+              const isActive = item.exact
+                ? location.pathname === item.path
+                : location.pathname === item.path || location.pathname.startsWith(item.path + '/');
 
               return (
                 <Link
@@ -183,13 +184,16 @@ export default function DashboardLayout({ children }) {
           </div>
 
           <div className="flex items-center gap-4">
-            <Link
-              to="/health"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition border border-emerald-200"
-            >
-              <Activity className="w-3.5 h-3.5 text-emerald-600" />
-              <span>DB Online (19 Tables)</span>
-            </Link>
+            {/* System Diagnostics only visible to Super Admin */}
+            {role === 'admin' && (
+              <Link
+                to="/admin/diagnostics"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition border border-emerald-200"
+              >
+                <Activity className="w-3.5 h-3.5 text-emerald-600" />
+                <span>DB Online (19 Tables)</span>
+              </Link>
+            )}
 
             <div className="h-4 w-px bg-slate-200" />
 
@@ -210,4 +214,3 @@ export default function DashboardLayout({ children }) {
     </div>
   );
 }
-
